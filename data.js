@@ -1,13 +1,14 @@
 const { ethers, upgrades } = require("hardhat");
 
 const { Client } = require('@elastic/elasticsearch')
-const secrets = require('./secrets');
-const client = new Client({ node: secrets.elastic })
+require('dotenv').config()
+
+const client = new Client({ node: process.env.ELK_URL || "http://localhost:9200" })
 
 const UNISWAP_FEES = 0.03;
 const REPEAT_SECS = 600;
 
-let provider = new ethers.providers.InfuraProvider("homestead",  secrets.infura );
+let provider = new ethers.providers.InfuraProvider("homestead", { projectId: process.env.INFURA_projectId , projectSecret: process.env.INFURA_projectSecret } );
 
 // IUniswapV2Pair
 const IUniswapV2Pair = require('@uniswap/v2-core/build/IUniswapV2Pair.json');
@@ -100,7 +101,15 @@ async function main() {
             let fei_diff_uni = Math.abs(trail_data.fei_on_lp_uni - data_to_store.fei_on_lp_uni) * data_to_store.pcv_lp_percent * UNISWAP_FEES;
             fei_metadata = fei_metadata.body._source;
             console.log(`Date:${data_to_store.ts}, Block: ${data_to_store.block}, CR: ${data_to_store.collaterization_ratio}, lp_profit: ${fei_diff_uni}`)
-            let new_metadata = { ts_: new Date(), trail_block_profit: fei_metadata.new_block_profit, new_block_profit: fei_diff_uni, cumulative_profit: fei_diff_uni + fei_metadata.cumulative_profit }
+            let new_metadata = {  
+                ts_: new Date(), 
+                trail_block_profit: fei_metadata.new_block_profit, 
+                new_block_profit: fei_diff_uni, 
+                cumulative_profit: fei_diff_uni + fei_metadata.cumulative_profit,
+                stablizer_eth: parseFloat(Stablizer_ETH),
+                dripped_eth: parseFloat(PCV_Dripper_ETH)
+
+            }
             await client.index({ index: 'fei-data', body: { timestamp_: data_to_store.ts, fei_data: data_to_store } })
             await client.index({ index: 'fei-metadata', id: "data", body: new_metadata })
         }

@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 const _ = require('lodash');
+require('dotenv').config()
 
 const { Client } = require('@elastic/elasticsearch')
-const secrets = require('./secrets');
-const client = new Client({ node: secrets.elastic })
+const client = new Client({ node: process.env.ELK_URL || "http://localhost:9200" })
 
 
 //////  TODO IN THIS ORDER: SETUP PANEL  
@@ -18,9 +18,14 @@ router.get('/refresh', async function(req, res, next) {
 
   let timestamp_cr = await client.search({
     index: "fei-data",
-    "_source": ["timestamp_",  "fei_data.collaterization_ratio", "fei_data.total_eth_pcv", "fei_data.circulating_fei", "fei_data.fei_usd_oracle_price"],
+    "_source": [ 
+          "timestamp_",  
+          "fei_data.collaterization_ratio", 
+          "fei_data.total_eth_pcv", 
+          "fei_data.circulating_fei", 
+          "fei_data.fei_usd_oracle_price"],
     body: {
-      size: 100,
+       size: 2000, // Aggregate this later on 
        sort: [{ "timestamp_": { "order": "asc" } }],
        query: { "range": {  "timestamp_": { "gte": "now-7d"  } } }
       }
