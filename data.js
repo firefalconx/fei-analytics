@@ -22,6 +22,11 @@ const EthReserveStabilizer_ABI = require('./contracts/custom/EthReserveStabilize
 let EthReserveStabilizer_Address = "0xa08A721dFB595753FFf335636674D76C455B275C"
 let EthReserveStabilizer = new ethers.Contract(EthReserveStabilizer_Address, EthReserveStabilizer_ABI, provider);
 
+const EthLidoPCVDeposit_ABI = require('./contracts/custom/EthLidoPCVDeposit.json');
+let EthLidoPCVDeposit_Address = "0xAc38Ee05C0204A1E119C625d0a560D6731478880"
+let EthLidoPCVDeposit = new ethers.Contract(EthLidoPCVDeposit_Address, EthLidoPCVDeposit_ABI, provider);
+
+
 const FEIToken_ABI = require('./contracts/custom/Fei.json');
 let FeiToken = new ethers.Contract("0x956F47F50A910163D8BF957Cf5846D573E7f87CA", FEIToken_ABI, provider);
 
@@ -43,7 +48,9 @@ async function main() {
     let FEI_ETH_LP_ETH_reserves = await ETH_FEI.getReserves() // FEI-ETH UNI RESERVES
     let FEI_ETH_LP_ETH_amt = ethers.utils.formatUnits(FEI_ETH_LP_ETH_reserves[1].toString(), 18) // FEI-ETH UNI ETH RESERVES
     let FEI_ETH_LP_FEI_amt = ethers.utils.formatUnits(FEI_ETH_LP_ETH_reserves[0].toString(), 18) // FEI-ETH UNI ETH RESERVES
-    let FEI_ETHuniswap_LP = ethers.utils.formatUnits(await ETH_FEI.totalSupply(), 18) // LP Tokens on UNI FEI-ETH 
+    let FEI_ETHuniswap_LP = ethers.utils.formatUnits(await ETH_FEI.totalSupply(), 18) // LP Tokens on UNI FEI-ETH
+
+    let LIDOStakedETH_Decimal = ethers.utils.formatUnits(await EthLidoPCVDeposit.balance(), 18) // LP Tokens on UNI FEI-ETH
 
     // Other Contracts: FEI/USDC Pair & ETH ORACLE
     let ETHFEI_Oracle = (await FEIUniswapOracle.read())[0][0];
@@ -60,7 +67,8 @@ async function main() {
 
     let FEI_ETH_protocol_pricee_FEI = ETH_PRICE/(parseFloat(FEI_ETH_LP_FEI_amt)/parseFloat(FEI_ETH_LP_ETH_amt))
 
-
+    console.log(LIDOStakedETH_Decimal)
+    
     let data_to_store = {
         pcv_lp_percent: LP_PERCENT,
         eth_on_lp_pcv: parseFloat(ETH_ON_FEI_PCV),
@@ -73,6 +81,7 @@ async function main() {
         total_fei_supply: parseFloat(FEISupply_Decimal),
         collaterization_ratio: collaterization_ratio,
         fei_usd_oracle_price: FEI_ETH_protocol_pricee_FEI,
+        staked_eth: LIDOStakedETH_Decimal,
         ts: new Date(),
         block: FEI_ETH_LP_ETH_reserves[2]
     }
