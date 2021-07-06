@@ -67,8 +67,6 @@ async function main() {
 
     let FEI_ETH_protocol_pricee_FEI = ETH_PRICE/(parseFloat(FEI_ETH_LP_FEI_amt)/parseFloat(FEI_ETH_LP_ETH_amt))
 
-    console.log(LIDOStakedETH_Decimal)
-    
     let data_to_store = {
         pcv_lp_percent: LP_PERCENT,
         eth_on_lp_pcv: parseFloat(ETH_ON_FEI_PCV),
