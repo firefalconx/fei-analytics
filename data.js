@@ -79,7 +79,7 @@ async function main() {
         total_fei_supply: parseFloat(FEISupply_Decimal),
         collaterization_ratio: collaterization_ratio,
         fei_usd_oracle_price: FEI_ETH_protocol_pricee_FEI,
-        staked_eth: LIDOStakedETH_Decimal,
+        staked_eth: parseFloat(LIDOStakedETH_Decimal),
         ts: new Date(),
         block: FEI_ETH_LP_ETH_reserves[2]
     }
