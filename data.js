@@ -61,7 +61,7 @@ async function main() {
     let FEI_ON_FEI_PCV = LP_PERCENT * FEI_ETH_LP_FEI_amt
 
     let CIRCULATING_FEI = parseFloat(FEISupply_Decimal - FEI_ON_FEI_PCV)
-    let TOTAL_ETH_PCV = parseFloat(Stablizer_ETH) + parseFloat(ETH_ON_FEI_PCV) + parseFloat(PCV_Dripper_ETH)
+    let TOTAL_ETH_PCV = parseFloat(Stablizer_ETH) + parseFloat(ETH_ON_FEI_PCV) + parseFloat(PCV_Dripper_ETH) + parseFloat(LIDOStakedETH_Decimal)
     let ETH_PRICE = parseFloat(ethers.utils.formatUnits(ETHFEI_Oracle.toString(), 18) )
     let collaterization_ratio = TOTAL_ETH_PCV*ETH_PRICE/CIRCULATING_FEI*100
 
