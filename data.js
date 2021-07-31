@@ -30,8 +30,14 @@ let EthLidoPCVDeposit = new ethers.Contract(EthLidoPCVDeposit_Address, EthLidoPC
 const FEIToken_ABI = require('./contracts/custom/Fei.json');
 let FeiToken = new ethers.Contract("0x956F47F50A910163D8BF957Cf5846D573E7f87CA", FEIToken_ABI, provider);
 
-const FEIUniswapOracle_ABI = require('./contracts/custom/UniswapOracle.json');
-let FEIUniswapOracle = new ethers.Contract("0x087F35bd241e41Fc28E43f0E8C58d283DD55bD65", FEIUniswapOracle_ABI, provider);
+// const FEIUniswapOracle_ABI = require('./contracts/custom/UniswapOracle.json');
+// let FEIUniswapOracle = new ethers.Contract("0x087F35bd241e41Fc28E43f0E8C58d283DD55bD65", FEIUniswapOracle_ABI, provider);
+
+const FEIUniswapOracle_ChainLink_ABI = require('./contracts/custom/ChainLinkOracle.json');
+let FEIUniswapOracle_ChainLink = new ethers.Contract("0xCd3c40AE1256922BA16C7872229385E20Bc8351e", FEIUniswapOracle_ChainLink_ABI, provider);
+
+
+
 
 let ETHPCVDripper_Address = "0xDa079A280FC3e33Eb11A78708B369D5Ca2da54fE"
 
@@ -53,7 +59,8 @@ async function main() {
     let LIDOStakedETH_Decimal = ethers.utils.formatUnits(await EthLidoPCVDeposit.balance(), 18) // LP Tokens on UNI FEI-ETH
 
     // Other Contracts: FEI/USDC Pair & ETH ORACLE
-    let ETHFEI_Oracle = (await FEIUniswapOracle.read())[0][0];
+    // let ETHFEI_Oracle = (await FEIUniswapOracle.read())[0][0];
+    let ETHFEI_Oracle_ChainLink = (await FEIUniswapOracle_ChainLink.read())[0][0];
 
     // Calculate Collaterization Ratio
     let LP_PERCENT = FEI_ETH_protocol_LP/FEI_ETHuniswap_LP
@@ -62,7 +69,7 @@ async function main() {
 
     let CIRCULATING_FEI = parseFloat(FEISupply_Decimal - FEI_ON_FEI_PCV)
     let TOTAL_ETH_PCV = parseFloat(Stablizer_ETH) + parseFloat(ETH_ON_FEI_PCV) + parseFloat(PCV_Dripper_ETH) + parseFloat(LIDOStakedETH_Decimal)
-    let ETH_PRICE = parseFloat(ethers.utils.formatUnits(ETHFEI_Oracle.toString(), 18) )
+    let ETH_PRICE = parseFloat(ethers.utils.formatUnits(ETHFEI_Oracle_ChainLink.toString(), 18) )
     let collaterization_ratio = TOTAL_ETH_PCV*ETH_PRICE/CIRCULATING_FEI*100
 
     let FEI_ETH_protocol_pricee_FEI = ETH_PRICE/(parseFloat(FEI_ETH_LP_FEI_amt)/parseFloat(FEI_ETH_LP_ETH_amt))
