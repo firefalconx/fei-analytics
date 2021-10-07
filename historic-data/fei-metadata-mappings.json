@@ -1,0 +1,1 @@
+{"fei-metadata":{"mappings":{"properties":{"cumulative_profit":{"type":"long"},"dripped_eth":{"type":"float"},"new_block_profit":{"type":"long"},"stablizer_eth":{"type":"float"},"trail_block_profit":{"type":"long"},"ts_":{"type":"date"}}}}}
